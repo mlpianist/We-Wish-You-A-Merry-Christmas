@@ -1,0 +1,541 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>We Wish You A Merry Christmas</title>
+<link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@500;600;700;800&family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --sky-top:#8FD8FF; --sky-bottom:#FFF3B8; --ink:#2B2250; --ink-soft:#4C4270;
+    --sun:#FFC93C; --sun-deep:#F5A623; --coral:#FF5A3C; --coral-deep:#D93F22;
+    --mint:#2FD68F; --mint-deep:#18A86A; --grape:#9B4DFF; --grape-deep:#7A2FDB;
+    --sea:#1EA7F2; --sea-deep:#0D7FC4; --left-light:#FF5A3C; --right-light:#9B4DFF;
+    --key-white:#FFFDF7; --key-edge:#E9C79B; --key-black:#3A2F66;
+  }
+  *{ margin:0; padding:0; box-sizing:border-box; }
+  html, body{ height:100%; overflow:hidden; }
+  body{ font-family:'Nunito', sans-serif; background: linear-gradient(180deg, var(--sky-top) 0%, var(--sky-bottom) 100%); background-attachment: fixed; color: var(--ink); }
+  #app{ width:100%; height:100%; display:flex; flex-direction:column; }
+  .screen{ display:none; flex:1; flex-direction:column; min-height:0; }
+  .screen.active{ display:flex; animation: rise .4s cubic-bezier(.2,.7,.3,1); }
+  @keyframes rise{ from{ opacity:0; transform: translateY(10px); } to{ opacity:1; transform:none; } }
+  h1{ font-family:'Baloo 2', sans-serif; font-weight:800; font-size:2.6rem; letter-spacing:-0.01em; color: var(--coral-deep); text-shadow: 0 3px 0 #fff; line-height:1.1; }
+
+  /* Home */
+  #screen-home{ padding: 28px 20px 40px; max-width: 640px; margin:0 auto; width:100%; align-items:center; overflow:auto; }
+  .home-header{ text-align:center; margin-bottom: 8px; }
+  .home-pic{ width:100%; max-width:520px; border-radius:28px; border:5px solid #fff; box-shadow: 0 8px 0 rgba(43,34,80,.18); overflow:hidden; margin: 14px 0 26px; background:#fff; }
+  .home-pic svg{ display:block; width:100%; height:auto; }
+  .part-grid{ display:grid; grid-template-columns: 1fr 1fr; gap:16px; width:100%; max-width:520px; }
+  .part-btn{ font-family:'Baloo 2', sans-serif; font-weight:800; font-size:1.5rem; color:#fff; border:none; border-radius:24px; padding: 18px 10px; cursor:pointer; transition: transform .12s ease, box-shadow .12s ease; }
+  .part-btn:active{ transform: translateY(5px); }
+  .part-btn.p1{ background: var(--coral); box-shadow: 0 7px 0 var(--coral-deep); }
+  .part-btn.p2{ background: var(--sea);   box-shadow: 0 7px 0 var(--sea-deep); }
+  .part-btn.p3{ background: var(--mint);  box-shadow: 0 7px 0 var(--mint-deep); }
+  .part-btn.p4{ background: var(--grape); box-shadow: 0 7px 0 var(--grape-deep); }
+  .part-btn:hover{ filter: brightness(1.07); }
+  .part-btn.p1:active{ box-shadow: 0 2px 0 var(--coral-deep); }
+  .part-btn.p2:active{ box-shadow: 0 2px 0 var(--sea-deep); }
+  .part-btn.p3:active{ box-shadow: 0 2px 0 var(--mint-deep); }
+  .part-btn.p4:active{ box-shadow: 0 2px 0 var(--grape-deep); }
+
+  /* Practice */
+  #screen-practice{ padding: 10px 14px 16px; max-width: 1200px; margin:0 auto; width:100%; min-height:0; }
+  .topbar{ display:flex; align-items:center; justify-content:space-between; gap:10px; margin-bottom: 4px; flex-shrink:0; }
+  .back-btn{ background:#fff; border:3px solid var(--sun); color: var(--coral-deep); font-family:'Baloo 2',sans-serif; font-weight:700; font-size:1rem; border-radius:999px; padding:6px 16px; cursor:pointer; }
+  .back-btn:hover{ background:#FFF6D6; }
+  .title-wrap{ text-align:center; flex:1; }
+  .title-wrap .part-title{ font-family:'Baloo 2',sans-serif; font-weight:800; font-size:1.7rem; color: var(--coral-deep); text-shadow:0 2px 0 #fff; line-height:1.1; }
+  .step-dots{ display:flex; gap:6px; justify-content:center; margin-top:4px; flex-wrap:wrap; }
+  .dot{ width:14px; height:14px; border-radius:50%; background:#fff; border:3px solid var(--sun-deep); }
+  .dot.done{ background: var(--mint); border-color: var(--mint-deep); }
+  .dot.now{ background: var(--sun); transform: scale(1.3); }
+  .topbar .spacer{ width:92px; }
+  .step-label{ text-align:center; font-family:'Baloo 2',sans-serif; font-weight:700; font-size:1.3rem; color: var(--ink); margin: 2px 0 6px; flex-shrink:0; }
+  .play-row{ display:flex; justify-content:center; margin-bottom: 10px; flex-shrink:0; }
+  .play-btn{ font-family:'Baloo 2',sans-serif; font-weight:800; font-size:1.4rem; color:#fff; border:none; border-radius:999px; padding: 12px 34px; cursor:pointer; display:flex; align-items:center; gap:10px; background: var(--mint); box-shadow: 0 6px 0 var(--mint-deep); }
+  .play-btn:active{ transform: translateY(4px); box-shadow: 0 2px 0 var(--mint-deep); }
+  .play-btn.stop{ background: var(--coral); box-shadow: 0 6px 0 var(--coral-deep); }
+  .play-btn.stop:active{ box-shadow: 0 2px 0 var(--coral-deep); }
+  .play-btn[disabled]{ opacity:.7; cursor:wait; }
+  .play-btn .icon{ width:22px; height:22px; display:block; }
+
+  .stage-box{ background: rgba(255,255,255,.55); border:4px solid #fff; border-radius:26px; padding: 10px 8px 4px; box-shadow: 0 6px 0 rgba(43,34,80,.14); flex: 1 1 auto; min-height: 0; display: flex; flex-direction: column; overflow: hidden; }
+  #stage-scale{ width:100%; flex: 1; min-height: 0; overflow:hidden; position:relative; }
+  #stage{ width:1140px; position:absolute; left:50%; top:0; margin-left:-570px; transform-origin: top center; }
+
+  #keys{ position:relative; width:1140px; height:200px; background: linear-gradient(180deg,#FFE9BE 0%,#FFD98F 100%); border-radius: 0 0 14px 14px; }
+  .pkey{ position:absolute; top:0; box-sizing:border-box; border-radius: 0 0 8px 8px; transition: background .06s ease, box-shadow .06s ease; }
+  .pkey.white{ width:58px; height:200px; background: linear-gradient(180deg, var(--key-white) 0%, #FBE9CF 100%); border:2px solid var(--key-edge); z-index:1; }
+  .pkey.black{ width:36px; height:122px; background: linear-gradient(180deg, #5C5182 0%, var(--key-black) 100%); border:2px solid #2E274A; z-index:2; }
+  .pkey.black.lit-L{ background: var(--left-light); }
+  .pkey.black.lit-R{ background: var(--right-light); }
+  .pkey.white.lit-L{ background: linear-gradient(180deg,#FF8A70 0%, var(--left-light) 100%); }
+  .pkey.white.lit-R{ background: linear-gradient(180deg,#C99AFF 0%, var(--right-light) 100%); }
+  .pkey.lit-L, .pkey.lit-R{ box-shadow: 0 0 18px 4px rgba(255,201,60,.9); }
+  .klabel{ position:absolute; bottom:8px; left:0; right:0; text-align:center; font-family:'Baloo 2',sans-serif; font-weight:800; font-size:1.05rem; color: var(--sun-deep); pointer-events:none; }
+
+  #hands{ display:block; width:1140px; height:330px; margin-top:6px; overflow: visible; }
+  .hand-outline{ stroke:#2B2250; stroke-linecap:round; stroke-linejoin:round; }
+  .hand-skin{ stroke:#FFD9B3; stroke-linecap:round; stroke-linejoin:round; }
+  .finger{ opacity:0; color:#FF5A3C; }
+  .finger line{ stroke:currentColor; stroke-width:36; stroke-linecap:butt; }
+  .finger circle{ fill:currentColor; }
+  .finger.lit-L{ opacity:1; color:var(--left-light); }
+  .finger.lit-R{ opacity:1; color:var(--right-light); }
+  .hand-tag{ font-family:'Baloo 2',sans-serif; font-weight:800; font-size:20px; fill: var(--ink-soft); text-anchor:middle; }
+
+  .bottom-row{ display:flex; align-items:center; justify-content:center; gap:16px; margin-top:12px; flex-wrap:wrap; flex-shrink:0; }
+  .practice-text{ font-family:'Baloo 2',sans-serif; font-weight:700; font-size:1.25rem; color: var(--ink); background:#fff; border:3px solid var(--sun); border-radius:18px; padding:8px 16px; }
+  .next-btn{ font-family:'Baloo 2',sans-serif; font-weight:800; font-size:1.2rem; color:#fff; border:none; border-radius:999px; padding: 12px 28px; cursor:pointer; background: var(--grape); box-shadow: 0 6px 0 var(--grape-deep); }
+  .next-btn:hover{ filter:brightness(1.08); }
+  .next-btn:active{ transform: translateY(4px); box-shadow: 0 2px 0 var(--grape-deep); }
+  .next-btn.done{ background: var(--sun-deep); box-shadow: 0 6px 0 #C47F0E; color: var(--ink); }
+  .next-btn.done:active{ box-shadow: 0 2px 0 #C47F0E; }
+  .sound-note{ text-align:center; font-weight:700; font-size:.85rem; color: var(--ink-soft); margin-top:6px; min-height:1.2em; flex-shrink:0; }
+  @media (max-width:520px){ h1{ font-size:2rem; } .topbar .spacer{ display:none; } }
+</style>
+</head>
+<body>
+<div id="app">
+
+  <!-- HOME -->
+  <section id="screen-home" class="screen active">
+    <div class="home-header"><h1>We Wish You A Merry Christmas</h1></div>
+
+    <div class="home-pic">
+      <svg viewBox="0 0 520 340" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Cartoon Christmas tree with presents and a snowman in the snow">
+        <defs><linearGradient id="nsky" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#1B2A6B"/><stop offset="1" stop-color="#5B7FD6"/></linearGradient></defs>
+        <rect width="520" height="340" fill="url(#nsky)"/>
+        <g fill="#FFF3B8"><circle cx="40" cy="40" r="3"/><circle cx="120" cy="70" r="2.5"/><circle cx="210" cy="28" r="3"/><circle cx="330" cy="50" r="2.5"/><circle cx="440" cy="30" r="3"/><circle cx="490" cy="90" r="2.5"/><circle cx="70" cy="130" r="2"/><circle cx="400" cy="120" r="2"/></g>
+        <circle cx="440" cy="75" r="26" fill="#FFF8D6"/><circle cx="450" cy="68" r="22" fill="#5B7FD6" opacity=".35"/>
+        <ellipse cx="130" cy="330" rx="260" ry="70" fill="#fff"/>
+        <ellipse cx="420" cy="335" rx="240" ry="62" fill="#EAF4FF"/>
+        <!-- tree -->
+        <rect x="236" y="255" width="28" height="40" rx="4" fill="#8B5A2B"/>
+        <polygon points="250,70 175,160 325,160" fill="#1FA85A"/>
+        <polygon points="250,115 160,215 340,215" fill="#18934D"/>
+        <polygon points="250,165 145,265 355,265" fill="#127E41"/>
+        <polygon points="250,40 257,60 278,61 261,73 267,93 250,81 233,93 239,73 222,61 243,60" fill="#FFC93C" stroke="#F5A623" stroke-width="2" stroke-linejoin="round"/>
+        <circle cx="228" cy="140" r="8" fill="#FF5A3C"/><circle cx="270" cy="115" r="8" fill="#FFC93C"/><circle cx="215" cy="200" r="9" fill="#9B4DFF"/><circle cx="285" cy="195" r="9" fill="#FF5A3C"/><circle cx="250" cy="170" r="8" fill="#1EA7F2"/><circle cx="190" cy="248" r="9" fill="#FFC93C"/><circle cx="310" cy="245" r="9" fill="#1EA7F2"/><circle cx="250" cy="240" r="9" fill="#FF5A3C"/>
+        <!-- presents -->
+        <rect x="70" y="270" width="60" height="50" rx="4" fill="#FF5A3C"/><rect x="95" y="270" width="10" height="50" fill="#FFC93C"/><rect x="70" y="288" width="60" height="9" fill="#FFC93C"/>
+        <rect x="135" y="288" width="44" height="34" rx="4" fill="#1EA7F2"/><rect x="152" y="288" width="9" height="34" fill="#fff"/>
+        <rect x="330" y="282" width="52" height="40" rx="4" fill="#9B4DFF"/><rect x="351" y="282" width="10" height="40" fill="#FFC93C"/><rect x="330" y="297" width="52" height="8" fill="#FFC93C"/>
+        <!-- snowman -->
+        <circle cx="440" cy="288" r="32" fill="#fff"/><circle cx="440" cy="238" r="23" fill="#fff"/>
+        <rect x="425" y="198" width="30" height="8" fill="#2B2250"/><rect x="430" y="178" width="20" height="22" fill="#2B2250"/><rect x="430" y="190" width="20" height="5" fill="#FF5A3C"/>
+        <circle cx="432" cy="234" r="3" fill="#2B2250"/><circle cx="448" cy="234" r="3" fill="#2B2250"/>
+        <polygon points="440,240 462,245 440,249" fill="#FF8A2B"/>
+        <rect x="422" y="256" width="36" height="7" rx="3" fill="#FF5A3C"/>
+        <circle cx="440" cy="280" r="3" fill="#2B2250"/><circle cx="440" cy="293" r="3" fill="#2B2250"/>
+        <line x1="410" y1="285" x2="385" y2="268" stroke="#8B5A2B" stroke-width="4" stroke-linecap="round"/><line x1="470" y1="285" x2="495" y2="268" stroke="#8B5A2B" stroke-width="4" stroke-linecap="round"/>
+        <g fill="#fff" opacity=".9"><circle cx="60" cy="90" r="3"/><circle cx="150" cy="40" r="3"/><circle cx="290" cy="90" r="3"/><circle cx="380" cy="150" r="3"/><circle cx="480" cy="170" r="3"/><circle cx="30" cy="200" r="3"/><circle cx="100" cy="180" r="3"/></g>
+      </svg>
+    </div>
+
+    <div class="part-grid">
+      <button class="part-btn p1" data-part="1">Part 1</button>
+      <button class="part-btn p2" data-part="2">Part 2</button>
+      <button class="part-btn p3" data-part="3">Part 3</button>
+      <button class="part-btn p4" data-part="4">Part 4</button>
+    </div>
+  </section>
+
+  <!-- PRACTICE -->
+  <section id="screen-practice" class="screen">
+    <div class="topbar">
+      <button class="back-btn" id="back-btn">&larr; Home</button>
+      <div class="title-wrap">
+        <div class="part-title" id="part-title">Part 1</div>
+        <div class="step-dots" id="step-dots"></div>
+      </div>
+      <div class="spacer"></div>
+    </div>
+    <div class="step-label" id="step-label">Step 1</div>
+    <div class="play-row"><button class="play-btn" id="play-btn"></button></div>
+    <div class="stage-box">
+      <div id="stage-scale">
+        <div id="stage">
+          <div id="keys"></div>
+          <svg id="hands" viewBox="0 0 1140 330" xmlns="http://www.w3.org/2000/svg"></svg>
+        </div>
+      </div>
+    </div>
+    <div class="bottom-row">
+      <div class="practice-text">Play this on the piano 10 times.</div>
+      <button class="next-btn" id="next-btn">Next step</button>
+    </div>
+    <div class="sound-note" id="sound-note"></div>
+  </section>
+</div>
+
+<script>
+(function(){
+  "use strict";
+
+  // ================= Music data =================
+  // An entry is [note, seconds, finger]. Entries in a hand play one after another from t = 0.
+  // [null, seconds] is a rest.
+  function buildPart(c){
+    var base = [[c.a,1,1],[c.t,1,4]];
+    var run  = [[c.t,.5,4],[c.up,.5,5],[c.t,.5,4],[c.low,.5,3]];
+    var rh2 = base.concat(run);
+    var rest = [null,1];
+    var l1 = c.l1, l2 = c.l2;
+    return [
+      { rh: base,                                   lh: [rest,[l1[0],1,l1[1]]] },
+      { rh: rh2,                                    lh: [rest,[l1[0],3,l1[1]]] },
+      { rh: rh2.concat([[c.x[0],1,c.x[1]]]),        lh: [rest,[l1[0],3,l1[1]],[l2[0],1,l2[1]]] },
+      { rh: rh2.concat([[c.x[0],1,c.x[1]],[c.y[0],1,c.y[1]]]), lh: [rest,[l1[0],3,l1[1]],[l2[0],2,l2[1]]] }
+    ];
+  }
+  var P4_RH = [['G4',.5,1],['G4',.5,1],['A4',1,2]];
+  var PARTS = {
+    1: { title:'Part 1', steps: buildPart({ a:'G4', t:'C5', up:'D5', low:'B4', x:['A4',2], y:['A4',2], l1:['C3',5], l2:['F3',2] }) },
+    2: { title:'Part 2', steps: buildPart({ a:'A4', t:'D5', up:'E5', low:'C5', x:['B4',2], y:['G4',1], l1:['D3',4], l2:['G3',1] }) },
+    3: { title:'Part 3', steps: buildPart({ a:'G4', t:'E5', up:'F5', low:'D5', x:['C5',2], y:['A4',1], l1:['E3',3], l2:['A3',1] }) },
+    4: { title:'Part 4', steps: [
+      { rh: P4_RH,                                                         lh: [[null,1],['F3',1,2]] },
+      { rh: P4_RH.concat([['D5',1,5]]),                                    lh: [[null,1],['F3',2,2]] },
+      { rh: P4_RH.concat([['D5',1,5],['B4',1,3]]),                         lh: [[null,1],['F3',2,2],['G3',1,1]] },
+      { rh: P4_RH.concat([['D5',1,5],['B4',1,3],['C5',2,4]]),              lh: [[null,1],['F3',2,2],['G3',1,1],['C3',2,5]] }
+    ]}
+  };
+
+  // ================= Keyboard (C3 - G5, white and black keys) =================
+  var NOTE_LETTERS = ['C','C#','D','D#','E','F','F#','G','G#','A','A#','B'];
+  function noteChromaticIndex(name){
+    var m = name.match(/^([A-G]#?)(\d)$/);
+    return parseInt(m[2], 10) * 12 + NOTE_LETTERS.indexOf(m[1]);
+  }
+  function buildChromaticRange(startNote, endNote){
+    var s = noteChromaticIndex(startNote), e = noteChromaticIndex(endNote), keys = [];
+    for(var i = s; i <= e; i++){
+      var letter = NOTE_LETTERS[i % 12];
+      keys.push({ name: letter + Math.floor(i / 12), type: letter.indexOf('#') >= 0 ? 'black' : 'white' });
+    }
+    return keys;
+  }
+  var WHITE_W = 58, WHITE_SPACING = 60, BLACK_W = 36, BLACK_OFFSET = 42, STAGE_W = 1140;
+  function buildKeyboardLayout(chromatic){
+    var whiteX = 0, lastWhiteX = 0;
+    return chromatic.map(function(k){
+      if(k.type === 'white'){
+        var pos = whiteX; lastWhiteX = whiteX; whiteX += WHITE_SPACING;
+        return { name:k.name, type:k.type, pos:pos, center:pos + WHITE_W/2 };
+      }
+      return { name:k.name, type:k.type, pos: lastWhiteX + BLACK_OFFSET, center: lastWhiteX + BLACK_OFFSET + BLACK_W/2 };
+    });
+  }
+  var LAYOUT = buildKeyboardLayout(buildChromaticRange('C3','G5'));   // 19 white keys = 1140px
+  var KEY_POS = {};
+  LAYOUT.forEach(function(k){ KEY_POS[k.name] = k; });
+
+  var keyEls = {};
+  function renderKeyboard(){
+    var wrap = document.getElementById('keys');
+    wrap.innerHTML = '';
+    var whites = LAYOUT.filter(function(k){ return k.type === 'white'; });
+    var blacks = LAYOUT.filter(function(k){ return k.type === 'black'; });
+    whites.concat(blacks).forEach(function(k){
+      var el = document.createElement('div');
+      el.className = 'pkey ' + k.type;
+      el.style.left = k.pos + 'px';
+      if(k.name === 'C4'){
+        var l = document.createElement('div'); l.className = 'klabel'; l.textContent = 'MC'; el.appendChild(l);
+      }
+      keyEls[k.name] = el;
+      wrap.appendChild(el);
+    });
+  }
+
+  // ================= Hands (drawn per step so each finger sits on its own key) =================
+  // Drawn in a "left hand" frame: pinky, ring, middle, index, thumb (left to right).
+  // The right hand is the same drawing mirrored (x -> -x), so fingers are placed at u = -x.
+  var SVGNS = 'http://www.w3.org/2000/svg';
+  var FINGER_W = 36, OUTLINE = 4;
+  var TIP_Y = [92,46,28,48,162];
+  var BASE_OFF = [[30,80],[16,110],[4,122],[-12,108],[-62,70]];   // tip -> knuckle
+  var LIT_OFF  = [[30,80],[16,110],[4,122],[-12,108],[-36,38]];   // tip -> start of lit part
+  var fingerEls = {};   // note -> finger overlay element
+
+  function svgEl(tag, attrs){
+    var el = document.createElementNS(SVGNS, tag);
+    Object.keys(attrs).forEach(function(k){ el.setAttribute(k, attrs[k]); });
+    return el;
+  }
+
+  function drawHand(svg, side, seq, label){
+    var s = side === 'L' ? 1 : -1;
+    var known = {}, u = [], i;
+    seq.forEach(function(e){
+      if(!e[0]) return;
+      var idx = 5 - e[2];                       // finger number -> frame index (5 = pinky = 0)
+      if(known[idx] === undefined) known[idx] = s * KEY_POS[e[0]].center;
+    });
+    var ks = Object.keys(known).map(Number).sort(function(a,b){ return a-b; });
+    for(i = 0; i < 5; i++){
+      if(known[i] !== undefined){ u[i] = known[i]; continue; }
+      var lo = null, hi = null;
+      ks.forEach(function(k){ if(k < i) lo = k; if(k > i && hi === null) hi = k; });
+      if(lo !== null && hi !== null) u[i] = known[lo] + (known[hi] - known[lo]) * (i - lo) / (hi - lo);
+      else if(lo !== null) u[i] = known[lo] + WHITE_SPACING * (i - lo);
+      else u[i] = known[hi] - WHITE_SPACING * (hi - i);
+    }
+    var b = u.map(function(x, j){ return [x + BASE_OFF[j][0], TIP_Y[j] + BASE_OFF[j][1]]; });
+    var palm = 'M' + (b[0][0]-20) + ' 166 L' + (b[3][0]+18) + ' 150 L' + (b[4][0]+36) + ' 218' +
+      ' C' + (b[4][0]+28) + ' 262 ' + (b[4][0]+8) + ' 288 ' + (b[4][0]-14) + ' 304' +
+      ' L' + (b[0][0]+46) + ' 304 C' + b[0][0] + ' 282 ' + (b[0][0]-26) + ' 220 ' + (b[0][0]-20) + ' 166 Z';
+
+    var g = svgEl('g', { transform: s === 1 ? '' : 'scale(-1,1)' });
+    g.appendChild(svgEl('path', { 'class':'hand-outline', d:palm, 'stroke-width':OUTLINE * 2, fill:'#2B2250' }));
+    for(i = 0; i < 5; i++)
+      g.appendChild(svgEl('line', { 'class':'hand-outline', x1:b[i][0], y1:b[i][1], x2:u[i], y2:TIP_Y[i], 'stroke-width':FINGER_W + OUTLINE * 2 }));
+    g.appendChild(svgEl('path', { 'class':'hand-skin', d:palm, fill:'#FFD9B3', 'stroke-width':0 }));
+    for(i = 0; i < 5; i++)
+      g.appendChild(svgEl('line', { 'class':'hand-skin', x1:b[i][0], y1:b[i][1], x2:u[i], y2:TIP_Y[i], 'stroke-width':FINGER_W }));
+
+    // lit overlays: one per distinct note, sitting on that note's key with the finger that plays it
+    seq.forEach(function(e){
+      if(!e[0] || fingerEls[e[0]]) return;
+      var j = 5 - e[2], tx = s * KEY_POS[e[0]].center;
+      var fg = svgEl('g', { 'class':'finger' });
+      fg.appendChild(svgEl('line', { x1:tx + LIT_OFF[j][0], y1:TIP_Y[j] + LIT_OFF[j][1], x2:tx, y2:TIP_Y[j] }));
+      fg.appendChild(svgEl('circle', { cx:tx, cy:TIP_Y[j], r:FINGER_W / 2 }));
+      g.appendChild(fg);
+      fingerEls[e[0]] = fg;
+    });
+    svg.appendChild(g);
+
+    var t = svgEl('text', { 'class':'hand-tag', x:s * (u[0] + 100), y:262 });
+    t.textContent = label;
+    svg.appendChild(t);
+  }
+
+  function renderHands(step){
+    var svg = document.getElementById('hands');
+    svg.innerHTML = '';
+    fingerEls = {};
+    drawHand(svg, 'L', step.lh, 'Left hand');
+    drawHand(svg, 'R', step.rh, 'Right hand');
+  }
+
+  // ================= Sound: physical-instruments.js piano (jsDelivr), with a simple fallback =================
+  var LIB_URL = 'https://cdn.jsdelivr.net/npm/physical-instruments.js@0.1.1/dist/index.js';
+  var engine = null, track = null, fallbackCtx = null, enginePromise = null, usingFallback = false;
+
+  function noteToMidi(name){
+    var m = name.match(/^([A-G]#?)(\d)$/);
+    return (parseInt(m[2], 10) + 1) * 12 + NOTE_LETTERS.indexOf(m[1]);
+  }
+  function loadEngine(){
+    if(enginePromise) return enginePromise;
+    enginePromise = (async function(){
+      try{
+        var mod = await import(LIB_URL);
+        engine = await mod.createEngine();
+        await engine.ready;
+        track = engine.createTrack('piano', { gain: 1 });
+      }catch(err){
+        console.warn('physical-instruments.js could not load, using a simple built-in piano-ish sound instead.', err);
+        usingFallback = true;
+        fallbackCtx = new (window.AudioContext || window.webkitAudioContext)();
+        document.getElementById('sound-note').textContent =
+          'Could not load the piano library (are you online?). Using a simple backup sound instead.';
+      }
+    })();
+    return enginePromise;
+  }
+
+  var fallbackVoices = {};
+  function soundOn(note){
+    var midi = noteToMidi(note);
+    if(!usingFallback){ if(track) track.noteOn(midi, 100); return; }
+    if(fallbackCtx.state === 'suspended') fallbackCtx.resume();
+    var osc = fallbackCtx.createOscillator(), gain = fallbackCtx.createGain();
+    var now = fallbackCtx.currentTime;
+    osc.type = 'triangle';
+    osc.frequency.value = 440 * Math.pow(2, (midi - 69) / 12);
+    gain.gain.setValueAtTime(0.0001, now);
+    gain.gain.exponentialRampToValueAtTime(0.35, now + 0.02);
+    gain.gain.exponentialRampToValueAtTime(0.08, now + 1.2);
+    osc.connect(gain); gain.connect(fallbackCtx.destination);
+    osc.start();
+    (fallbackVoices[note] = fallbackVoices[note] || []).push({ osc:osc, gain:gain });
+  }
+  function soundOff(note){
+    var midi = noteToMidi(note);
+    if(!usingFallback){ if(track) track.noteOff(midi); return; }
+    var list = fallbackVoices[note];
+    if(!list || !list.length) return;
+    var v = list.shift();
+    var now = fallbackCtx.currentTime;
+    v.gain.gain.cancelScheduledValues(now);
+    v.gain.gain.setValueAtTime(Math.max(v.gain.gain.value, 0.0001), now);
+    v.gain.gain.exponentialRampToValueAtTime(0.0001, now + 0.15);
+    v.osc.stop(now + 0.2);
+  }
+
+  // ================= Playback + lights =================
+  var player = { playing:false, timers:[], token:0, sounding:[] };
+  var GAP = 0.06;   // short release before a note ends so repeated notes re-strike and lights blink
+
+  function lightOn(note, hand){
+    var k = keyEls[note], f = fingerEls[note];
+    if(k) k.classList.add('lit-' + hand);
+    if(f) f.classList.add('lit-' + hand);
+  }
+  function lightOff(note){
+    var k = keyEls[note], f = fingerEls[note];
+    if(k) k.classList.remove('lit-L','lit-R');
+    if(f) f.classList.remove('lit-L','lit-R');
+  }
+
+  function buildEvents(step){
+    var events = [], total = 0;
+    [['L', step.lh], ['R', step.rh]].forEach(function(pair){
+      var t = 0;
+      pair[1].forEach(function(n){
+        if(n[0]) events.push({ hand:pair[0], note:n[0], start:t, end:t + n[1] });
+        t += n[1];
+      });
+      if(t > total) total = t;
+    });
+    return { events:events, total:total };
+  }
+
+  function setPlayButton(mode){   // 'play' | 'stop' | 'loading'
+    var b = document.getElementById('play-btn');
+    var playIcon = '<svg class="icon" viewBox="0 0 24 24"><path d="M6 3 L21 12 L6 21Z" fill="#fff" stroke="#fff" stroke-width="2" stroke-linejoin="round"/></svg>';
+    var stopIcon = '<svg class="icon" viewBox="0 0 24 24"><rect x="4" y="4" width="16" height="16" rx="3" fill="#fff"/></svg>';
+    b.disabled = (mode === 'loading');
+    b.classList.toggle('stop', mode === 'stop');
+    if(mode === 'play') b.innerHTML = playIcon + '<span>Play</span>';
+    else if(mode === 'stop') b.innerHTML = stopIcon + '<span>Stop</span>';
+    else b.innerHTML = '<span>Loading piano…</span>';
+  }
+
+  function stopPlayback(){
+    player.token++;
+    player.timers.forEach(clearTimeout);
+    player.timers = [];
+    player.sounding.forEach(function(note){ soundOff(note); lightOff(note); });
+    player.sounding = [];
+    Object.keys(keyEls).forEach(lightOff);
+    Object.keys(fingerEls).forEach(lightOff);
+    player.playing = false;
+    setPlayButton('play');
+  }
+
+  async function startPlayback(){
+    var myToken = ++player.token;
+    setPlayButton('loading');
+    await loadEngine();
+    if(myToken !== player.token) return;
+
+    var step = PARTS[current.part].steps[current.step];
+    var built = buildEvents(step);
+    player.playing = true;
+    player.sounding = [];
+    setPlayButton('stop');
+
+    built.events.forEach(function(ev){
+      var onT = setTimeout(function(){
+        lightOn(ev.note, ev.hand);
+        soundOn(ev.note);
+        player.sounding.push(ev.note);
+      }, ev.start * 1000);
+      var offT = setTimeout(function(){
+        soundOff(ev.note);
+        lightOff(ev.note);
+        var i = player.sounding.indexOf(ev.note);
+        if(i >= 0) player.sounding.splice(i, 1);
+      }, (ev.end - GAP) * 1000);
+      player.timers.push(onT, offT);
+    });
+    player.timers.push(setTimeout(function(){
+      if(myToken !== player.token) return;
+      stopPlayback();
+    }, built.total * 1000 + 80));
+  }
+
+  // ================= Screens + step navigation =================
+  var current = { part:1, step:0 };
+
+  function showScreen(id){
+    document.querySelectorAll('.screen').forEach(function(s){ s.classList.remove('active'); });
+    document.getElementById(id).classList.add('active');
+    if(id === 'screen-practice'){ fitStage(); requestAnimationFrame(fitStage); }
+  }
+
+  function renderStep(){
+    var part = PARTS[current.part];
+    var total = part.steps.length;
+    document.getElementById('part-title').textContent = part.title;
+    document.getElementById('step-label').textContent = 'Step ' + (current.step + 1) + ' of ' + total;
+
+    var dots = document.getElementById('step-dots');
+    dots.innerHTML = '';
+    for(var i = 0; i < total; i++){
+      var d = document.createElement('div');
+      d.className = 'dot' + (i < current.step ? ' done' : (i === current.step ? ' now' : ''));
+      dots.appendChild(d);
+    }
+
+    var next = document.getElementById('next-btn');
+    var last = current.step === total - 1;
+    next.textContent = last ? 'Done practicing this part!' : 'Next step';
+    next.classList.toggle('done', last);
+
+    renderHands(part.steps[current.step]);
+    setPlayButton('play');
+    fitStage();
+  }
+
+  function startPart(n){
+    stopPlayback();
+    current.part = n;
+    current.step = 0;
+    showScreen('screen-practice');
+    renderStep();
+  }
+  function goHome(){ stopPlayback(); showScreen('screen-home'); }
+
+  function fitStage(){
+    var scaleBox = document.getElementById('stage-scale');
+    var stage = document.getElementById('stage');
+    if(!scaleBox.clientWidth || !scaleBox.clientHeight) return;
+    stage.style.transform = 'none';
+    var naturalH = stage.offsetHeight || 536;
+    var scale = Math.min(1, scaleBox.clientWidth / STAGE_W, scaleBox.clientHeight / naturalH);
+    stage.style.transformOrigin = 'top center';
+    stage.style.transform = 'scale(' + scale + ')';
+    // center vertically inside the box using the scaled height
+    stage.style.top = Math.max(0, (scaleBox.clientHeight - naturalH * scale) / 2) + 'px';
+  }
+
+  // ================= Wiring =================
+  document.querySelectorAll('.part-btn').forEach(function(b){
+    b.addEventListener('click', function(){ startPart(parseInt(b.getAttribute('data-part'), 10)); });
+  });
+  document.getElementById('back-btn').addEventListener('click', goHome);
+  document.getElementById('play-btn').addEventListener('click', function(){
+    if(player.playing) stopPlayback(); else startPlayback();
+  });
+  document.getElementById('next-btn').addEventListener('click', function(){
+    var total = PARTS[current.part].steps.length;
+    if(current.step >= total - 1){ goHome(); return; }
+    stopPlayback();
+    current.step++;
+    renderStep();
+  });
+  window.addEventListener('resize', fitStage);
+
+  renderKeyboard();
+  setPlayButton('play');
+})();
+</script>
+</body>
+</html>
